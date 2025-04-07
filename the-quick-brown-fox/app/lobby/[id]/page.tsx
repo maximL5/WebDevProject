@@ -1,6 +1,12 @@
 "use client";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { io } from "socket.io-client";
+
+
+
+const socket = io('http://localhost:3000')
 
 type Player = {
   id: string;
@@ -14,6 +20,8 @@ export default function Lobby() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
   const isHost = searchParams.get('host') === 'true';
+  const router = useRouter();
+
 
   useEffect(() => {
     // Simulate different player perspectives
@@ -55,7 +63,11 @@ export default function Lobby() {
   const startGame = (): void => {
     console.log(`Host ${currentPlayer?.nickname} started the game`);
     // Game starting logic here
+
+    // if player is host, direct to ./host/page.tsx
+    // else player is directed to ./player/page.tsx
   };
+  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-800">
