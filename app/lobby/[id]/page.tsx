@@ -13,7 +13,7 @@ type Player = {
 export default function Lobby() {
   const params = useParams<{ id: string }>();
   const searchParams = useSearchParams();
-1
+
   const [players, setPlayers] = useState<Player[]>([]);
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
   const isHost = searchParams.get("host") === "true";
