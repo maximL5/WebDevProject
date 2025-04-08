@@ -4,42 +4,26 @@ import { useEffect, useState } from "react";
 
 //page for player
 export default function Host() {
-    const [timeLeft, setTimeLeft] = useState(30);
-
-    useEffect(() => {
-        if (timeLeft <= 0) {
-          {SubmitAnswer}
-        };
-    
-        const timer = setInterval(() => {
-          setTimeLeft((prev) => prev - 1);
-        }, 1000);
-    
-        return () => clearInterval(timer); 
-      }, [timeLeft]);
-
     const SubmitAnswer = () => {
         console.log('Answer submitted');
-        
+        // update to save the time/points of each player
       };
 
     return(
     <main className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-800">
       <div className="w-full max-w-md rounded-lg shadow-md p-8 bg-gray-800 border border-gray-600">
         <h1 className="text-3xl font-bold text-center mb-5 text-amber-400">
-          Your role is: Writer ✍️
+          Quick! Type this out as fast as you can! 
         </h1>
         <h1 className="text-xl font-medium text-left mb-2 text-white-400">
-          Come up with the best response to win! Your prompt is: 
+          "p1/p2's answer"
         </h1>
 
         <div className="text-white text-right text-lg mb-4">
-        <span className="font-bold">{timeLeft}s</span>
         </div>
         
         <div className="space-y-6">
           <div>
-            <label htmlFor="response" className="sr-only">Your Response</label>
             <textarea
               id="response"
               rows={5}

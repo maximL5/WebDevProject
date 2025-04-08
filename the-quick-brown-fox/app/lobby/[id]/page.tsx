@@ -71,9 +71,9 @@ export default function Lobby() {
       const data = snapshot.val();
       if (!data) return;
 
-      if (data.status === "waiting_for_prompt" && !isHost && currentPlayer) {
-        router.push(`/player?id=${gameId}`);
-      }
+      if (data.status === "waiting_for_prompt" && currentPlayer) {
+        router.push(`/answer-prompt?id=${gameId}&playerId=${currentPlayer.id}`);
+      }      
     });
 
     return () => unsubscribe();
@@ -87,14 +87,10 @@ export default function Lobby() {
 
     try {
       await update(ref(realtimeDb, `games/${gameId}`), {
-        host: currentPlayer.nickname,
-        prompt: "",
-        responses: {},
-        winner: null,
-        status: "waiting_for_prompt",
+        player: currentPlayer.nickname,
       });
 
-      router.push(`/host?id=${gameId}`);
+
     } catch (error) {
       console.error("Error starting game:", error);
     }

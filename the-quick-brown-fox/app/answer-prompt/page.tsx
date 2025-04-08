@@ -2,20 +2,21 @@
 
 //page for prompt giver
 export default function Host() {
-    const SubmitPrompt = () => {
-        console.log('Prompts sent to players');
-        // socket logic here
+    const SubmitAnswer = () => {
+        console.log('Answer submitted');
+        
       };
 
     return(
     <main className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-800">
       <div className="w-full max-w-md rounded-lg shadow-md p-8 bg-gray-800 border border-gray-600">
         <h1 className="text-3xl font-bold text-center mb-5 text-amber-400">
-          Your role is: Judge 👑
+          Answer to the best of your ability! Or not!
         </h1>
-        <h1 className="text-xl font-medium text-left mb-2 text-white-400">
-          Write a prompt for the other players!
+        <h1 className="text-xl font-bold text-left mb-5 text-white-400">
+          Your prompt is: {}
         </h1>
+        
         
         <div className="space-y-6">
           <div>
@@ -28,7 +29,7 @@ export default function Host() {
           
           <button 
             className="w-full py-2 px-4 font-medium rounded-md transition-colors bg-amber-400 text-gray-900 hover:bg-amber-500 focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-gray-800"
-            onClick={SubmitPrompt}
+            onClick={SubmitAnswer}
           >
             Submit
           </button>
