@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+
 
 type RoomCreationResponse = {
   roomId: string;
@@ -36,6 +37,7 @@ export default function Home() {
   };
 
   return (
+    
     <main className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-800">
       <div className="w-full max-w-md rounded-lg shadow-md p-8 bg-gray-800 border border-gray-600">
         <h1 className="text-3xl font-bold text-center mb-8 text-amber-400">

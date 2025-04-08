@@ -2,11 +2,7 @@
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { io } from "socket.io-client";
-
-
-
-const socket = io('http://localhost:3000')
+import socket from '../../socket';
 
 type Player = {
   id: string;
@@ -21,7 +17,7 @@ export default function Lobby() {
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
   const isHost = searchParams.get('host') === 'true';
   const router = useRouter();
-
+  const nickname = searchParams.get("nickname");
 
   useEffect(() => {
     // Simulate different player perspectives
@@ -60,14 +56,58 @@ export default function Lobby() {
     setPlayers(simulatedPlayers);
   }, [params.id]);
 
+
+  useEffect(() => {
+    if (!params.id || !nickname || !socket.connected) return;
+  
+    console.log("Lobby useEffect fired");
+  
+    socket.emit("joinRoom", {
+      roomId: params.id,
+      nickname,
+      isHost,
+    });
+  
+    socket.on("roomJoined", (data) => {
+      console.log("Joined room:", data);
+    });
+
+    if (!isHost) {
+      socket.on("startGame", () => {
+        router.push(`/player?id=${params.id}`);
+      });
+    }
+  
+    return () => {
+      socket.emit("leaveRoom", { roomId: params.id });
+      socket.off("roomJoined");
+      socket.off("startGame");
+    };
+  }, [params.id, nickname, isHost, socket.connected]);
+  
+
   const startGame = (): void => {
     console.log(`Host ${currentPlayer?.nickname} started the game`);
     // Game starting logic here
+    // Emit startGame event to notify all players
+    socket.emit("startGame", { roomId: params.id });
 
-    // if player is host, direct to ./host/page.tsx
-    // else player is directed to ./player/page.tsx
+    // navigate host to /host page
+    // navigate regular player to /player
+    if (isHost) {
+      router.push(`/host?id=${params.id}`);
+    } 
+    else {
+      router.push(`/player?id=${params.id}`);
+    }
+    
+
   };
   
+
+  
+  
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-800">

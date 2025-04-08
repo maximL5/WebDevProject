@@ -7,13 +7,15 @@ export default function Host() {
     const [timeLeft, setTimeLeft] = useState(30);
 
     useEffect(() => {
-        if (timeLeft <= 0) return;
+        if (timeLeft <= 0) {
+          {SubmitAnswer}
+        };
     
         const timer = setInterval(() => {
           setTimeLeft((prev) => prev - 1);
         }, 1000);
     
-        return () => clearInterval(timer); // cleanup
+        return () => clearInterval(timer); 
       }, [timeLeft]);
 
     const SubmitAnswer = () => {
@@ -28,11 +30,11 @@ export default function Host() {
           Your role is: Writer ✍️
         </h1>
         <h1 className="text-xl font-medium text-left mb-2 text-white-400">
-          Come up with the best response to win!
+          Come up with the best response to win! Your prompt is: 
         </h1>
 
-        <div className="text-white text-center text-lg mb-4">
-          Time Left: <span className="font-bold">{timeLeft}s</span>
+        <div className="text-white text-right text-lg mb-4">
+        <span className="font-bold">{timeLeft}s</span>
         </div>
         
         <div className="space-y-6">
