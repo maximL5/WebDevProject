@@ -20,6 +20,7 @@ export default function Lobby() {
   const router = useRouter();
   const gameId = params.id;
 
+  
   useEffect(() => {
     // Simulate different player perspectives
     const nickname = searchParams.get("nickname") || "Anonymous";
