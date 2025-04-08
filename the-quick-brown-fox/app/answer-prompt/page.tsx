@@ -1,10 +1,18 @@
 "use client";
 
+import promptList from '../prompts.json';
+
+
+function getRandomItem(arr:string[]) {
+  const randomIndex = Math.floor(Math.random() * arr.length);
+  return arr[randomIndex];
+} 
+
 //page for prompt giver
 export default function Host() {
     const SubmitAnswer = () => {
         console.log('Answer submitted');
-        
+
       };
 
     return(
@@ -14,7 +22,7 @@ export default function Host() {
           Answer to the best of your ability! Or not!
         </h1>
         <h1 className="text-xl font-bold text-left mb-5 text-white-400">
-          Your prompt is: {}
+          Your prompt is: {getRandomItem(promptList)}
         </h1>
         
         
