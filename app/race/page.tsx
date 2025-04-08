@@ -15,6 +15,12 @@ interface Player {
 
 export default function Host() {
 
+  const router = useRouter();
+
+  const moveToResults = (time: number) => {
+    router.push(`/results?id=${time}`)
+  }
+
   // const playerId = typeof window !== 'undefined' ? localStorage.getItem("me") : null;
   // const searchParams = useSearchParams();
   // const gameId = searchParams.get("id");
@@ -75,7 +81,7 @@ export default function Host() {
         
         <div className="space-y-6">
           <div>
-            <Typebox textToBeTyped="if I were a potato in a kitchen I would probably try and turn myself into a hashbrown by jumping through a cheese grater. It's more fun than dealing with firebase anyway"></Typebox>
+            <Typebox pushToNextPage={moveToResults} textToBeTyped="if I were a potato in a kitchen I would probably try and turn myself into a hashbrown by jumping through a cheese grater. It's more fun than dealing with firebase anyway"></Typebox>
           </div>        
           
         </div>

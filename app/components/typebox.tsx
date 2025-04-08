@@ -1,12 +1,14 @@
 
+import { push } from 'firebase/database';
 import { useState, useEffect } from 'react';
 
 type TypeboxProps = {
     textToBeTyped: string;
+    pushToNextPage: (time: number) => void;
   };
 
 
-export default function Typebox( { textToBeTyped }: TypeboxProps ) {
+export default function Typebox( { textToBeTyped, pushToNextPage }: TypeboxProps ) {
 
     const [inputText, setInputText] = useState('');
     const [storedCorrectText, setStoredCorrectText] = useState('');
@@ -19,6 +21,7 @@ export default function Typebox( { textToBeTyped }: TypeboxProps ) {
     const [tInc, setTInc] = useState(0.1);
     useEffect(() => {
         if (finished) {
+            pushToNextPage(timer)
             return;
         }
 
