@@ -1,7 +1,7 @@
 "use client";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ref, set, onValue } from "firebase/database";
+import { ref, set, onValue, update } from "firebase/database";
 import { realtimeDb } from "@/app/lib/firebase";
 
 type Player = {
@@ -20,6 +20,7 @@ export default function Lobby() {
   const router = useRouter();
   const gameId = params.id;
 
+  
   useEffect(() => {
     // Simulate different player perspectives
     const nickname = searchParams.get("nickname") || "Anonymous";
@@ -33,14 +34,14 @@ export default function Lobby() {
     setCurrentPlayer(newPlayer);
 
     const playerRef = ref(realtimeDb, `games/${gameId}/players/${playerId}`);
-    set(playerRef, {
-      nickname: nickname,
-      role: isHost ? "host" : "player",
-      promptReceived: "",
-      response: "",
-      points: 0,
-      isHost: isHost
-    });
+    set(playerRef, 
+      { 
+        nickname: nickname, 
+        role: isHost ? "host" : "player", 
+        promptReceived: "",
+        response: "" ,
+        points: 0,
+      });
 
     // Listen for player updates
     const playersRef = ref(realtimeDb, `games/${gameId}/players`);
@@ -48,14 +49,15 @@ export default function Lobby() {
       const data = snapshot.val();
       if (data) {
         const playerList: Player[] = Object.entries(data).map(([id, value]) => {
-          const playerData = value as {
-            nickname: string;
-            isHost: boolean;
-          };
+          const playerData = value as { name: string; role: string; nickname: string; isHost: boolean; promptReceived: string; response: string, points: number };
           return {
-            id,
-            nickname: playerData.nickname,
-            isHost: playerData.isHost,
+            id, // Firebase player id
+            nickname: playerData.nickname, // Assuming nickname exists in the player data
+            isHost: playerData.isHost, // Assuming isHost exists in the player data
+            role: playerData.isHost ? "host" : "player",
+            promptReceived: "",
+            response: "",
+            points: 0,
           };
         });
         setPlayers(playerList);
@@ -78,32 +80,32 @@ export default function Lobby() {
     const gameRef = ref(realtimeDb, `games/${gameId}`);
     const unsubscribe = onValue(gameRef, (snapshot) => {
       const data = snapshot.val();
-      if (!data || !currentPlayer) return;
-
-      // Redirect based on role
+      if (!data) return;
+      // redirect players to answer-prompt page
       if (data.status === "waiting_for_prompt") {
-        if (currentPlayer.isHost) {
-          router.push(`/answer-prompt?id=${gameId}`);
-        } else {
-          router.push(`/race?id=${gameId}`);
-        }
+        router.push(`/answer-prompt?id=${gameId}`);
       }
     });
 
     return () => unsubscribe();
-  }, [gameId, currentPlayer]);
+  }, [gameId, isHost, currentPlayer]);
 
   const startGame = async (): Promise<void> => {
     if (!isHost || !currentPlayer) {
       console.log("Only host can start the game");
       return;
     }
-
-    // Example: set game status to start the round
-    const gameRef = ref(realtimeDb, `games/${gameId}`);
-    set(gameRef, {
-      status: "waiting_for_prompt",
-    });
+    
+    try {
+      // Update game status to "waiting_for_prompt"
+      const gameRef = ref(realtimeDb, `games/${gameId}`);
+      await update(gameRef, {
+        status: "waiting_for_prompt",
+      });
+      
+    } catch (error) {
+      console.error("Error starting game:", error);
+    }
   };
 
   return (
@@ -121,18 +123,14 @@ export default function Lobby() {
               <li
                 key={player.id}
                 className={`px-4 py-2 rounded flex items-center ${
-                  player.id === currentPlayer?.id
-                    ? "bg-amber-400/20 border border-amber-400/30"
-                    : "bg-gray-700"
+                  player.id === currentPlayer?.id ? "bg-amber-400/20 border border-amber-400/30" : "bg-gray-700"
                 }`}
               >
                 <span className="text-gray-200">
                   {player.nickname}
                   {player.isHost && " 👑"}
                 </span>
-                {player.id === currentPlayer?.id && (
-                  <span className="ml-auto text-xs text-gray-400">(You)</span>
-                )}
+                {player.id === currentPlayer?.id && <span className="ml-auto text-xs text-gray-400">(You)</span>}
               </li>
             ))}
           </ul>
@@ -142,23 +140,15 @@ export default function Lobby() {
           <button
             onClick={startGame}
             className={`w-full py-2 px-4 rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-gray-800 ${
-              players.length < 3
-                ? "bg-gray-700 text-gray-400 cursor-not-allowed"
-                : "bg-amber-400 text-gray-900 hover:bg-amber-500"
+              players.length < 2 ? "bg-gray-700 text-gray-400 cursor-not-allowed" : "bg-amber-400 text-gray-900 hover:bg-amber-500"
             }`}
-            disabled={players.length < 3}
+            disabled={players.length < 2}
           >
-            {players.length < 3
-              ? `Waiting for ${3 - players.length} more player(s)...`
-              : "Start Game"}
+            {players.length < 2 ? `Waiting for ${3 - players.length} more player(s)...` : "Start Game"}
           </button>
         )}
 
-        {!isHost && (
-          <p className="text-center text-gray-300">
-            Waiting for host to start the game...
-          </p>
-        )}
+        {!isHost && <p className="text-center text-gray-300">Waiting for host to start the game...</p>}
       </div>
     </div>
   );
