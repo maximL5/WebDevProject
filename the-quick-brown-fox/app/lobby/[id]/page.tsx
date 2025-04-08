@@ -142,13 +142,13 @@ export default function Lobby() {
           <button
             onClick={startGame}
             className={`w-full py-2 px-4 rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-gray-800 ${
-              players.length < 2
+              players.length < 3
                 ? "bg-gray-700 text-gray-400 cursor-not-allowed"
                 : "bg-amber-400 text-gray-900 hover:bg-amber-500"
             }`}
-            disabled={players.length < 2}
+            disabled={players.length < 3}
           >
-            {players.length < 2
+            {players.length < 3
               ? `Waiting for ${3 - players.length} more player(s)...`
               : "Start Game"}
           </button>
