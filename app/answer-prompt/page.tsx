@@ -54,7 +54,7 @@ export default function Host() {
       });
   
       console.log('Answer submitted');
-      router.push(`/waiting-room?id=${gameId}`);
+      router.push(`/race?id=${gameId}`);
     }, {
       onlyOnce: true  
     });
