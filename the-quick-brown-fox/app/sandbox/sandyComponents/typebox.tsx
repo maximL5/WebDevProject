@@ -11,6 +11,7 @@ export default function Typebox( { textToBeTyped }: TypeboxProps ) {
     const [inputText, setInputText] = useState('');
     const [storedCorrectText, setStoredCorrectText] = useState('');
     const gameText = textToBeTyped;
+    const [finished, setFinished] = useState(false);
 
     //Timer shiz
     const [timer, setTimer] = useState(0)
@@ -28,14 +29,23 @@ export default function Typebox( { textToBeTyped }: TypeboxProps ) {
     const [position, setPosition] = useState(0);
 
 
-    const displayChar = (text:string) => {
-
-        if (text.slice(-1).toLowerCase() == gameText.slice(position, position + 1).toLowerCase()) {
+    const displayChar = (text:string) => { 
+        const mostRecentCharTyped = text.slice(-1).toLowerCase()
+        const compareChar = gameText.slice(position, position + 1).toLowerCase()
+        if (mostRecentCharTyped == compareChar) {
             setInputText(text);
             setStoredCorrectText(text);
             setPosition(position + 1);
+            if (position + 1>= gameText.length) {
+                setInputText("You win!")
+                setFinished(true)
+            }
         } else {
-            setInputText(storedCorrectText);
+            if (finished) {
+                
+            } else {
+                setInputText(storedCorrectText);
+            }
         }
     }
 
