@@ -13,17 +13,22 @@ export default function Typebox( { textToBeTyped }: TypeboxProps ) {
     const gameText = textToBeTyped;
     const [finished, setFinished] = useState(false);
 
+    
     //Timer shiz
-    const [timer, setTimer] = useState(0)
+    const [timer, setTimer] = useState(0);
+    const [tInc, setTInc] = useState(0.1);
     useEffect(() => {
-    const timerLoop = () => {
-      setTimer(prev => Math.round((prev + 0.1) * 10) / 10); 
-    };
+        if (finished) {
+            return;
+        }
 
+    const timerLoop = () => {
+      setTimer(prev => Math.round((prev + tInc) * 10) / 10); 
+    };
     const intervalId = setInterval(timerLoop, 100); 
 
     return () => clearInterval(intervalId); 
-  }, []);
+  }, [finished]);
 
 
     const [position, setPosition] = useState(0);
@@ -38,6 +43,7 @@ export default function Typebox( { textToBeTyped }: TypeboxProps ) {
             setPosition(position + 1);
             if (position + 1>= gameText.length) {
                 setInputText("You win!")
+                setTInc(0)
                 setFinished(true)
             }
         } else {
