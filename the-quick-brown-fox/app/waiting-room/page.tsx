@@ -1,7 +1,57 @@
 
 
-//page for prompt giver
+import { useState, useEffect } from 'react';
+import promptList from '../prompts.json';
+import { useParams, useSearchParams, useRouter } from "next/navigation";
+import { ref, set, onValue, update } from "firebase/database";
+import { realtimeDb } from "@/app/lib/firebase";
+
+
+
 export default function Host() {
+    const [allResponded, setAllResponded] = useState(false);
+    const [players, setPlayers] = useState<any[]>([]); 
+    const params = useParams<{ id: string }>();
+    const router = useRouter();
+    const gameId = params.id;
+
+    const checkAllResponses = (players: any[]) => {
+        return players.every(player => player.response !== "");
+    };
+
+    useEffect(() => {
+        const playersRef = ref(realtimeDb, `games/${gameId}/playerList`);
+
+        const unsubscribe = onValue(playersRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+            
+                const playerList = Object.entries(data).map(([id, player]) => {
+                    
+                    if (player && typeof player === 'object') {
+                        return { id, ...player }; 
+                    }
+                    return { id }; 
+                });
+
+                setPlayers(playerList);
+
+                const responsesFilled = checkAllResponses(playerList);
+                if (responsesFilled) {
+                    setAllResponded(true);
+                }
+            }
+        });
+
+        return () => unsubscribe();
+    }, [gameId]);
+
+    useEffect(() => {
+        if (allResponded) {
+            router.push(`/race?id=${gameId}`);
+        }
+    }, [allResponded, gameId, router]);
+
 
     return(
     <main className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-800">

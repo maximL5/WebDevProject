@@ -11,7 +11,6 @@ function getRandomItem(arr:string[]) {
   return arr[randomIndex];
 } 
 
-//page for prompt giver
 export default function Host() {
 
   const [answer, setAnswer] = useState('');
