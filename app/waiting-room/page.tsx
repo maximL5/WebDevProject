@@ -27,7 +27,8 @@ export default function Host() {
         console.log("Players Ref:", playersRef);
 
         const unsubscribe = onValue(playersRef, (snapshot) => {
-            const data = snapshot.val();
+            // const data = snapshot.val();
+            const data = true
             console.log("Data:", data);
             if (data) {
             
