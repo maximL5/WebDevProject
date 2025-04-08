@@ -2,7 +2,6 @@
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import socket from '../../socket';
 
 type Player = {
   id: string;
@@ -17,7 +16,6 @@ export default function Lobby() {
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
   const isHost = searchParams.get('host') === 'true';
   const router = useRouter();
-  const nickname = searchParams.get("nickname");
 
   useEffect(() => {
     // Simulate different player perspectives
@@ -57,40 +55,9 @@ export default function Lobby() {
   }, [params.id]);
 
 
-  useEffect(() => {
-    if (!params.id || !nickname || !socket.connected) return;
-  
-    console.log("Lobby useEffect fired");
-  
-    socket.emit("joinRoom", {
-      roomId: params.id,
-      nickname,
-      isHost,
-    });
-  
-    socket.on("roomJoined", (data) => {
-      console.log("Joined room:", data);
-    });
-
-    if (!isHost) {
-      socket.on("startGame", () => {
-        router.push(`/player?id=${params.id}`);
-      });
-    }
-  
-    return () => {
-      socket.emit("leaveRoom", { roomId: params.id });
-      socket.off("roomJoined");
-      socket.off("startGame");
-    };
-  }, [params.id, nickname, isHost, socket.connected]);
-  
-
   const startGame = (): void => {
     console.log(`Host ${currentPlayer?.nickname} started the game`);
     // Game starting logic here
-    // Emit startGame event to notify all players
-    socket.emit("startGame", { roomId: params.id });
 
     // navigate host to /host page
     // navigate regular player to /player
