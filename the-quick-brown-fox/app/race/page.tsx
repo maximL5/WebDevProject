@@ -1,17 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+
+import { useState, useEffect } from 'react';
+import promptList from '../prompts.json';
+import { useParams, useSearchParams, useRouter } from "next/navigation";
+import { ref, set, onValue, update } from "firebase/database";
+import { realtimeDb } from "@/app/lib/firebase";
 
 import Typebox  from "../components/typebox";
 
-//page for player
-export default function Host() {
-    const SubmitAnswer = () => {
-        console.log('Answer submitted');
-        // update to save the time/points of each player
-      };
 
-    return(
+export default function Host() {
+
+  const playerId = typeof window !== 'undefined' ? localStorage.getItem("me") : null;
+
+
+  
+
+  return(
     <main className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-800">
       <div className="w-full max-w-md rounded-lg shadow-md p-8 bg-gray-800 border border-gray-600">
         <h1 className="text-3xl font-bold text-center mb-5 text-amber-400">
@@ -30,5 +36,5 @@ export default function Host() {
       </div>
     </main>
 
-    )
+  )
 }
