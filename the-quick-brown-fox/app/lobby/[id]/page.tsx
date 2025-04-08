@@ -51,9 +51,9 @@ export default function Lobby() {
         const playerList: Player[] = Object.entries(data).map(([id, value]) => {
           const playerData = value as { name: string; role: string; nickname: string; isHost: boolean; promptReceived: string; response: string, points: number };
           return {
-            id, // Firebase player id
-            nickname: playerData.nickname, // Assuming nickname exists in the player data
-            isHost: playerData.isHost, // Assuming isHost exists in the player data
+            id, 
+            nickname: playerData.nickname, 
+            isHost: playerData.isHost, 
             role: playerData.isHost ? "host" : "player",
             promptReceived: "",
             response: "",
@@ -95,18 +95,15 @@ export default function Lobby() {
       console.log("Only host can start the game");
       return;
     }
-    
+  
     try {
-      // Update game status to "waiting_for_prompt"
-      const gameRef = ref(realtimeDb, `games/${gameId}`);
-      await update(gameRef, {
-        status: "waiting_for_prompt",
-      });
-      
+      router.push(`/answer-prompt?id=${gameId}`);
+  
     } catch (error) {
       console.error("Error starting game:", error);
     }
   };
+  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-800">
