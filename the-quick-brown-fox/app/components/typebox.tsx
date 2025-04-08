@@ -64,7 +64,9 @@ export default function Typebox( { textToBeTyped }: TypeboxProps ) {
             <form>
                 <textarea onChange={(e) => displayChar(e.target.value)}
                           value={inputText}
-                          className="text-blue-600 bg-yellow-100 border border-gray-400 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-80 h-40 resize-none"/>
+                          className="w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400 bg-gray-700 text-gray-200 border border-gray-600"
+                          rows={5}
+                          placeholder="Type your response here..."/>
             </form>
             <h1>{timer}</h1>
         </div>
