@@ -33,7 +33,14 @@ export default function Lobby() {
     setCurrentPlayer(newPlayer);
 
     const playerRef = ref(realtimeDb, `games/${gameId}/players/${playerId}`);
-    set(playerRef, { name: nickname, role: isHost ? "host" : "player", response: "" });
+    set(playerRef, 
+      { 
+        nickname: nickname, 
+        role: isHost ? "host" : "player", 
+        promptReceived: "",
+        response: "" ,
+        points: 0,
+      });
 
     // Listen for player updates
     const playersRef = ref(realtimeDb, `games/${gameId}/players`);
@@ -41,11 +48,15 @@ export default function Lobby() {
       const data = snapshot.val();
       if (data) {
         const playerList: Player[] = Object.entries(data).map(([id, value]) => {
-          const playerData = value as { name: string; role: string };
+          const playerData = value as { name: string; role: string; nickname: string; isHost: boolean; promptReceived: string; response: string, points: number };
           return {
-            id,
-            nickname: playerData.name,
-            isHost: playerData.role === "host",
+            id, // Firebase player id
+            nickname: playerData.nickname, // Assuming nickname exists in the player data
+            isHost: playerData.isHost, // Assuming isHost exists in the player data
+            role: playerData.isHost ? "host" : "player",
+            promptReceived: "",
+            response: "",
+            points: 0,
           };
         });
         setPlayers(playerList);
@@ -65,15 +76,14 @@ export default function Lobby() {
   }, [gameId, isHost, searchParams]);
 
   useEffect(() => {
-    // Listen to game status changes
     const gameRef = ref(realtimeDb, `games/${gameId}`);
     const unsubscribe = onValue(gameRef, (snapshot) => {
       const data = snapshot.val();
       if (!data) return;
-
-      if (data.status === "waiting_for_prompt" && currentPlayer) {
-        router.push(`/answer-prompt?id=${gameId}&playerId=${currentPlayer.id}`);
-      }      
+      // redirect players to answer-prompt page
+      if (data.status === "waiting_for_prompt") {
+        router.push(`/answer-prompt?id=${gameId}`);
+      }
     });
 
     return () => unsubscribe();
@@ -84,24 +94,11 @@ export default function Lobby() {
       console.log("Only host can start the game");
       return;
     }
-
-    try {
-      await update(ref(realtimeDb, `games/${gameId}`), {
-        player: currentPlayer.nickname,
-      });
-
-
-    } catch (error) {
-      console.error("Error starting game:", error);
-    }
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-800">
       <div className="w-full max-w-md rounded-lg shadow-md p-8 bg-gray-800 border border-gray-600">
-        <h1 className="text-3xl font-bold text-center mb-8 text-amber-400">
-            The Quick Brown Fox
-        </h1>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-amber-400">Room: {gameId}</h2>
           <span className="text-sm text-gray-400">{isHost ? "👑 Host" : "Player"}</span>
