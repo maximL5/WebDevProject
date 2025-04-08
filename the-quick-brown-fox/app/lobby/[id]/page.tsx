@@ -98,12 +98,24 @@ export default function Lobby() {
     }
   
     try {
+      const gameRef = ref(realtimeDb, `games/${gameId}`);
+      await update(gameRef, { status: "waiting_for_prompt",
+        playerList: players.map((player) => ({
+          id: player.id,
+          nickname: player.nickname,
+          isHost: player.isHost,
+          role: player.isHost ? "host" : "player",
+          promptReceived: "",
+          response: "",
+          points: 0,
+        })),
+       }); // <-- merge instead of overwrite
       router.push(`/answer-prompt?id=${gameId}`);
-  
     } catch (error) {
       console.error("Error starting game:", error);
     }
   };
+  
   
 
   return (
