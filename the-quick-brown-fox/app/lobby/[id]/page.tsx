@@ -25,6 +25,7 @@ export default function Lobby() {
     // Simulate different player perspectives
     const nickname = searchParams.get("nickname") || "Anonymous";
     const playerId = Math.random().toString(36).substring(2, 9);
+    localStorage.setItem("me", playerId);
     const newPlayer: Player = {
       id: playerId,
       nickname,
