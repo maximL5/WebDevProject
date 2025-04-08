@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import promptList from '../prompts.json';
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { ref, set, onValue, update } from "firebase/database";
 import { realtimeDb } from "@/app/lib/firebase";
 
@@ -16,25 +16,50 @@ export default function Host() {
 
   const [answer, setAnswer] = useState('');
 
-  const params = useParams<{ id: string }>();
+  const [myPrompt] = useState(getRandomItem(promptList));
+
+  const searchParams = useSearchParams();
+  const gameId = searchParams.get("id");
+
   const router = useRouter();
-  const gameId = params.id;
 
   const playerId = typeof window !== 'undefined' ? localStorage.getItem("me") : null;
 
 
   const SubmitAnswer = async () => {
+    console.log(playerId)
     if (!answer || !gameId || !playerId) return;
-
-    const playerRef = ref(realtimeDb, `games/${gameId}/players/${playerId}`);
-
-    await update(playerRef, {
-      response: answer,
+  
+    const playerListRef = ref(realtimeDb, `games/${gameId}/playerList`);
+  
+    onValue(playerListRef, async (snapshot) => {
+      const data = snapshot.val();
+  
+      if (!data || !Array.isArray(data)) {
+        console.error("Player list not found or invalid");
+        return;
+      }
+  
+      const index = data.findIndex((player: any) => player.id === playerId);
+  
+      if (index === -1) {
+        console.error("Player ID not found in player list");
+        return;
+      }
+  
+      const targetPlayerRef = ref(realtimeDb, `games/${gameId}/playerList/${index}`);
+  
+      await update(targetPlayerRef, {
+        promptReceived: myPrompt,
+        response: answer,
+      });
+  
+      console.log('Answer submitted');
+      router.push(`/waiting-room?id=${gameId}`);
+    }, {
+      onlyOnce: true  
     });
-
-    console.log('Answer submitted');
-    router.push(`/waiting-room?id=${gameId}`)
-    };
+  };
 
   return(
     <main className="flex flex-col items-center justify-center min-h-screen p-6 bg-gray-800">
@@ -43,7 +68,7 @@ export default function Host() {
           Answer to the best of your ability! Or not!
         </h1>
         <h1 className="text-xl font-bold text-left mb-5 text-white-400">
-          Your prompt is: {getRandomItem(promptList)}
+          Your prompt is: {myPrompt}
         </h1>
         
         
