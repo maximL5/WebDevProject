@@ -2,6 +2,8 @@
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { realtimeDb } from "@/app/lib/firebase";
+import { set, ref } from "firebase/database";
 
 type Player = {
   id: string;
@@ -55,25 +57,48 @@ export default function Lobby() {
   }, [params.id]);
 
 
-  const startGame = (): void => {
-    console.log(`Host ${currentPlayer?.nickname} started the game`);
-    // Game starting logic here
-
-    // navigate host to /host page
-    // navigate regular player to /player
-    if (isHost) {
-      router.push(`/host?id=${params.id}`);
-    } 
-    else {
-      router.push(`/player?id=${params.id}`);
+  const startGame = async (): Promise<void> => {
+    console.log("Start Game clicked");
+    
+    if (!isHost) {
+      console.log("Only host can start the game");
+      return;
     }
+  
+    console.log("players", players);
+  
+    const gameId = params.id;
+    
+    const playersObj = Object.fromEntries(
+      players.map(player => [
+        player.id,
+        {
+          name: player.nickname,
+          role: player.isHost ? "host" : "player",
+          response: ""
+        }
+      ])
+    );
+  
+    try {
+      // Initialize game state in Firebase
+      await set(ref(realtimeDb, `games/${gameId}`), {
+        host: currentPlayer!.nickname,
+        players: playersObj,
+        prompt: "",
+        responses: {},
+        winner: null,
+        status: "waiting_for_prompt"
+      });
+      
+      console.log("Game started, navigating...");
+      router.push(`/host?id=${params.id}`);
+    } catch (error) {
+      console.error("Error starting game:", error);
+    }
+  };
     
 
-  };
-  
-
-  
-  
 
 
   return (
@@ -117,7 +142,7 @@ export default function Lobby() {
         {isHost && (
           <button
             onClick={startGame}
-            disabled={players.length < 2}
+            // disabled={players.length < 2}
             className={`w-full py-2 px-4 rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-gray-800 ${
               players.length < 2
                 ? "bg-gray-700 text-gray-400 cursor-not-allowed"
@@ -135,7 +160,8 @@ export default function Lobby() {
             Waiting for host to start the game...
           </p>
         )}
+        
       </div>
     </div>
   );
-}
+};
