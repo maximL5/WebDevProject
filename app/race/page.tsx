@@ -2,13 +2,16 @@
 
 
 import { useState, useEffect } from 'react';
-import promptList from '../prompts.json';
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { ref, set, onValue, update, get } from "firebase/database";
 import { realtimeDb } from "@/app/lib/firebase";
 
 import Typebox  from "../components/typebox";
 
+interface Player {
+  id: string;
+  response: string; 
+}
 
 export default function Host() {
 
@@ -16,53 +19,48 @@ export default function Host() {
   const searchParams = useSearchParams();
   const gameId = searchParams.get("id");
 
-  const [playerResponses, setPlayerResponses] = useState([])
+  const [playerResponses, setPlayerResponses] = useState([''])
 
 
 
   const RetrieveResponses = async () => {
-    console.log(playerId)
+    console.log(playerId);
     if (!gameId || !playerId) return;
-  
+
     const playerListRef = ref(realtimeDb, `games/${gameId}/playerList`);
-  
+
     onValue(playerListRef, async (snapshot) => {
       const data = snapshot.val();
-  
-      if (!data || !Array.isArray(data)) {
+
+      if (!data) {
         console.error("Player list not found or invalid");
         return;
       }
-  
-      const index = data.findIndex((player: any) => player.id === playerId);
-  
-      if (index === -1) {
-        console.error("Player ID not found in player list");
-        return;
-      }
-  
-      const targetPlayerRef = ref(realtimeDb, `games/${gameId}/playerList/${index}`);
 
-      let dummyArray = []
+      let responses: string[] = [];
+      Object.entries(data).forEach(async ([key, player]) => {
+        const typedPlayer = player as Player; 
 
-      for (let i = 1; i<4; i++) {
-        if (i == index) {
-          //do nothing
-        } else {
-          const targetPlayerRef = ref(realtimeDb, `games/${gameId}/playerList/${i}`);
-          dummyArray.push(targetPlayerRef)
+        if (typedPlayer.id !== playerId) { 
+          const targetPlayerRef = ref(realtimeDb, `games/${gameId}/playerList/${key}`);
+          const playerSnapshot = await get(targetPlayerRef);
+
+          if (playerSnapshot.exists()) {
+            const playerData = playerSnapshot.val();
+            if (playerData && playerData.response) {
+              responses.push(playerData.response); 
+            }
+          }
         }
-      }
-      
-      let secondArray = []
+      });
 
-      let firstRes = await get(dummyArray[0], {response})
-
-
-    }, {
-      onlyOnce: true  
+      setPlayerResponses(responses);
     });
   };
+
+  useEffect(() => {
+    RetrieveResponses();
+  }, [gameId, playerId]);
 
 
   return(
