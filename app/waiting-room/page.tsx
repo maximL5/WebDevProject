@@ -15,6 +15,8 @@ export default function Host() {
     const router = useRouter();
     const gameId = params.id;
 
+    console.log({players,allResponded})
+
     const checkAllResponses = (players: any[]) => {
         return players.every(player => player.response !== "");
     };
@@ -22,8 +24,11 @@ export default function Host() {
     useEffect(() => {
         const playersRef = ref(realtimeDb, `games/${gameId}/playerList`);
 
+        console.log("Players Ref:", playersRef);
+
         const unsubscribe = onValue(playersRef, (snapshot) => {
             const data = snapshot.val();
+            console.log("Data:", data);
             if (data) {
             
                 const playerList = Object.entries(data).map(([id, player]) => {
@@ -37,6 +42,8 @@ export default function Host() {
                 setPlayers(playerList);
 
                 const responsesFilled = checkAllResponses(playerList);
+
+                console.log("responsesFilled:", responsesFilled);
                 if (responsesFilled) {
                     setAllResponded(true);
                 }
@@ -51,6 +58,7 @@ export default function Host() {
             router.push(`/race?id=${gameId}`);
         }
     }, [allResponded, gameId, router]);
+ 
 
 
     return(
