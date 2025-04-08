@@ -1,7 +1,7 @@
 "use client";
 
 import promptList from '../prompts.json';
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 function getRandomItem(arr:string[]) {
   const randomIndex = Math.floor(Math.random() * arr.length);
@@ -11,8 +11,9 @@ function getRandomItem(arr:string[]) {
 //page for prompt giver
 export default function Host() {
 
+  const params = useParams<{ id: string }>();
   const router = useRouter();
-  const gameId = 5
+  const gameId = params.id;
 
 
   const SubmitAnswer = () => {
