@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect } from 'react';
-import { useParams, useSearchParams, useRouter } from "next/navigation";
-import { ref, set, onValue, update } from "firebase/database";
+import { useParams, useRouter } from "next/navigation";
+import { ref, onValue } from "firebase/database";
 import { realtimeDb } from "@/app/lib/firebase";
 
 export default function Host() {
