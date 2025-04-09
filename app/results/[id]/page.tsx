@@ -1,8 +1,9 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { ref, onValue } from "firebase/database";
 import { realtimeDb } from "@/app/lib/firebase";
-import { useParams, useSearchParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 
 type Player = {
   id: string;
@@ -11,15 +12,13 @@ type Player = {
 };
 
 export default function Results() {
+  const params = useParams<{ id: string }>();
+  const gameId = params.id;
   const [players, setPlayers] = useState<Player[]>([]);
 
-  const searchParams = useSearchParams();
-  const time = searchParams.get("time");
-
   useEffect(() => {
-    const gameId = "2DCCE708"; 
     const playerRef = ref(realtimeDb, `games/${gameId}/playerList`);
-    // const playerRef = ref(realtimeDb, "players");
+    
     onValue(playerRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -41,7 +40,6 @@ export default function Results() {
         <h1 className="text-3xl font-bold text-center mb-5 text-amber-400">
           Results!
         </h1>
-        <h1>Your time {time}</h1>
         <div className="space-y-4">
           {players.map((player, index) => (
             <div

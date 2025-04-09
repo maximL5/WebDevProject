@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import promptList from '../../prompts.json';
-import { useParams, useSearchParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ref, set, onValue, update } from "firebase/database";
 import { realtimeDb } from "@/app/lib/firebase";
 
@@ -12,12 +12,11 @@ function getRandomItem(arr:string[]) {
 } 
 
 export default function Host() {
+  const router = useRouter();
+  const params = useParams<{ id: string }>();
+  const gameId = params.id;
   const [answer, setAnswer] = useState('');
   const [myPrompt] = useState(getRandomItem(promptList));
-  const router = useRouter();
-  const params = useParams();
-  const gameId = params.id as string;
-
   const playerId = typeof window !== 'undefined' ? localStorage.getItem("me") : null;
 
   const SubmitAnswer = async () => {
