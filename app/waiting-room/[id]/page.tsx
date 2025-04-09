@@ -5,8 +5,6 @@ import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { ref, set, onValue, update } from "firebase/database";
 import { realtimeDb } from "@/app/lib/firebase";
 
-
-
 export default function Host() {
     const [allResponded, setAllResponded] = useState(false);
     const [players, setPlayers] = useState<any[]>([]); 
@@ -14,15 +12,12 @@ export default function Host() {
     const router = useRouter();
     const gameId = params.id;
 
-    const checkAllResponses = () => {
-        return players.every(player => player.response !== "");
+    const checkAllResponses = (playerList: any) => {
+        return playerList.every((player: { response: string; }) => player.response !== "");
     };
-
+    
     useEffect(() => {
         const playersRef = ref(realtimeDb, `games/${gameId}/playerList`);
-
-        console.log("Players Ref:", playersRef.toString());
-
         const unsubscribe = onValue(playersRef, (snapshot) => {
             const data = snapshot.val();
 
@@ -34,9 +29,8 @@ export default function Host() {
                     return { id }; 
                 });
 
-
                 setPlayers(playerList);
-                const responsesFilled = checkAllResponses();
+                const responsesFilled = checkAllResponses(playerList);
 
                 if (responsesFilled) {
                     setAllResponded(true);
