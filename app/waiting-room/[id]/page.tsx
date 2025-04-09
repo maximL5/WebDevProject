@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from 'react';
-import promptList from '../prompts.json';
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { ref, set, onValue, update } from "firebase/database";
 import { realtimeDb } from "@/app/lib/firebase";
@@ -15,36 +14,30 @@ export default function Host() {
     const router = useRouter();
     const gameId = params.id;
 
-    console.log({players,allResponded})
-
-    const checkAllResponses = (players: any[]) => {
+    const checkAllResponses = () => {
         return players.every(player => player.response !== "");
     };
 
     useEffect(() => {
         const playersRef = ref(realtimeDb, `games/${gameId}/playerList`);
 
-        console.log("Players Ref:", playersRef);
+        console.log("Players Ref:", playersRef.toString());
 
         const unsubscribe = onValue(playersRef, (snapshot) => {
-            // const data = snapshot.val();
-            const data = true
-            console.log("Data:", data);
-            if (data) {
-            
+            const data = snapshot.val();
+
+            if (Boolean(data)) {
                 const playerList = Object.entries(data).map(([id, player]) => {
-                    
                     if (player && typeof player === 'object') {
                         return { id, ...player }; 
                     }
                     return { id }; 
                 });
 
+
                 setPlayers(playerList);
+                const responsesFilled = checkAllResponses();
 
-                const responsesFilled = checkAllResponses(playerList);
-
-                console.log("responsesFilled:", responsesFilled);
                 if (responsesFilled) {
                     setAllResponded(true);
                 }
@@ -56,7 +49,7 @@ export default function Host() {
 
     useEffect(() => {
         if (allResponded) {
-            router.push(`/race?id=${gameId}`);
+            router.push(`/race/${gameId}`);
         }
     }, [allResponded, gameId, router]);
  
