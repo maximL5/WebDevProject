@@ -17,8 +17,8 @@ export default function Host() {
 
   const router = useRouter();
 
-  const moveToResults = (time: number) => {
-    router.push(`/results?time=${time}`)
+  const moveToResults = (score: number) => {
+    router.push(`/results?score=${score}`)
   }
 
   const playerId = typeof window !== 'undefined' ? localStorage.getItem("me") : null;

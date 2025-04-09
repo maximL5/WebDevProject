@@ -22,7 +22,8 @@ export default function Typebox( { textToBeTyped, playerPrompt, pushToNextPage }
     const [tInc, setTInc] = useState(0.1);
     useEffect(() => {
         if (finished) {
-            pushToNextPage(timer)
+            const score = gameText.length - (timer * 2)
+            pushToNextPage(score)
             return;
         }
 
