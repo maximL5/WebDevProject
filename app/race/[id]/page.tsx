@@ -21,52 +21,57 @@ export default function Host() {
     router.push(`/results?time=${time}`)
   }
 
-  // const playerId = typeof window !== 'undefined' ? localStorage.getItem("me") : null;
-  // const searchParams = useSearchParams();
-  // const gameId = searchParams.get("id");
+  const playerId = typeof window !== 'undefined' ? localStorage.getItem("me") : null;
+  const searchParams = useSearchParams();
+  const gameId = searchParams.get("id");
 
-  // const [playerResponses, setPlayerResponses] = useState([''])
+  const [playerResponses, setPlayerResponses] = useState([''])
+  const [playerPrompts, setPlayerPrompts] = useState<string[]>([])
 
 
 
-  // const RetrieveResponses = async () => {
-  //   console.log(playerId);
-  //   if (!gameId || !playerId) return;
+  const RetrieveResponses = async () => {
+    console.log(playerId);
+    if (!gameId || !playerId) return;
 
-  //   const playerListRef = ref(realtimeDb, `games/${gameId}/playerList`);
+    const playerListRef = ref(realtimeDb, `games/${gameId}/playerList`);
 
-  //   onValue(playerListRef, async (snapshot) => {
-  //     const data = snapshot.val();
+    onValue(playerListRef, async (snapshot) => {
+      const data = snapshot.val();
 
-  //     if (!data) {
-  //       console.error("Player list not found or invalid");
-  //       return;
-  //     }
+      if (!data) {
+        console.error("Player list not found or invalid");
+        return;
+      }
 
-  //     let responses: string[] = [];
-  //     Object.entries(data).forEach(async ([key, player]) => {
-  //       const typedPlayer = player as Player; 
+      let responses: string[] = [];
+      let prompts: string[] = [];
+      Object.entries(data).forEach(async ([key, player]) => {
+        const typedPlayer = player as Player; 
 
-  //       if (typedPlayer.id !== playerId) { 
-  //         const targetPlayerRef = ref(realtimeDb, `games/${gameId}/playerList/${key}`);
-  //         const playerSnapshot = await get(targetPlayerRef);
+        if (typedPlayer.id !== playerId) { 
+          const targetPlayerRef = ref(realtimeDb, `games/${gameId}/playerList/${key}`);
+          const playerSnapshot = await get(targetPlayerRef);
 
-  //         if (playerSnapshot.exists()) {
-  //           const playerData = playerSnapshot.val();
-  //           if (playerData && playerData.response) {
-  //             responses.push(playerData.response); 
-  //           }
-  //         }
-  //       }
-  //     });
+          if (playerSnapshot.exists()) {
+            const playerData = playerSnapshot.val();
+            if (playerData && playerData.response) {
+              responses.push(playerData.response); 
+            }
+            if (playerData && playerData.promptReceived) {
+              prompts.push(playerData.promptReceived)
+            }
+          }
+        }
+      });
+      setPlayerPrompts(prompts);
+      setPlayerResponses(responses);
+    });
+  };
 
-  //     setPlayerResponses(responses);
-  //   });
-  // };
-
-  // useEffect(() => {
-  //   RetrieveResponses();
-  // }, [gameId, playerId]);
+  useEffect(() => {
+    RetrieveResponses();
+  }, [gameId, playerId]);
 
 
   return(
@@ -81,7 +86,7 @@ export default function Host() {
         
         <div className="space-y-6">
           <div>
-            <Typebox pushToNextPage={moveToResults} textToBeTyped="if I were a potato in a kitchen I would probably try and turn myself into a hashbrown by jumping through a cheese grater. It's more fun than dealing with firebase anyway"></Typebox>
+            <Typebox pushToNextPage={moveToResults} playerPrompt={playerPrompts[0]} textToBeTyped={playerResponses[0]}></Typebox>
           </div>        
           
         </div>

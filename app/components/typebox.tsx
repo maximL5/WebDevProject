@@ -4,11 +4,12 @@ import { useState, useEffect } from 'react';
 
 type TypeboxProps = {
     textToBeTyped: string;
+    playerPrompt: string;
     pushToNextPage: (time: number) => void;
   };
 
 
-export default function Typebox( { textToBeTyped, pushToNextPage }: TypeboxProps ) {
+export default function Typebox( { textToBeTyped, playerPrompt, pushToNextPage }: TypeboxProps ) {
 
     const [inputText, setInputText] = useState('');
     const [storedCorrectText, setStoredCorrectText] = useState('');
@@ -63,6 +64,7 @@ export default function Typebox( { textToBeTyped, pushToNextPage }: TypeboxProps
 
     return(
         <div>
+            <h1>The player's prompt: {playerPrompt}</h1>
             <h1>{textToBeTyped}</h1>
             <form>
                 <textarea onChange={(e) => displayChar(e.target.value)}
