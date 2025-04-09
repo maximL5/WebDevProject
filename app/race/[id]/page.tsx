@@ -55,8 +55,8 @@ export default function Host() {
   }
 
   const playerId = typeof window !== 'undefined' ? localStorage.getItem("me") : null;
-  const searchParams = useSearchParams();
-  const gameId = searchParams.get("id");
+  const params = useParams()
+  const gameId = params.id as string;
 
   const [playerResponses, setPlayerResponses] = useState([''])
   const [playerPrompts, setPlayerPrompts] = useState<string[]>([])
