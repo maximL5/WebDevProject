@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { ref, set, onValue, update } from "firebase/database";
 import { realtimeDb } from "@/app/lib/firebase";
+import { Ceviche_One } from 'next/font/google';
 
 
 
@@ -14,31 +15,15 @@ export default function Host() {
     const router = useRouter();
     const gameId = params.id;
 
-    const checkAllResponses = () => {
-        return players.every(player => player.response !== "");
-    };
-
     useEffect(() => {
         const playersRef = ref(realtimeDb, `games/${gameId}/playerList`);
-
-        console.log("Players Ref:", playersRef.toString());
 
         const unsubscribe = onValue(playersRef, (snapshot) => {
             const data = snapshot.val();
 
-            if (Boolean(data)) {
-                const playerList = Object.entries(data).map(([id, player]) => {
-                    if (player && typeof player === 'object') {
-                        return { id, ...player }; 
-                    }
-                    return { id }; 
-                });
-
-
-                setPlayers(playerList);
-                const responsesFilled = checkAllResponses();
-
-                if (responsesFilled) {
+            if (data) {
+                if (data[0].response != "" && data[1].response != "" && data[2].response != "") {
+                    console.log(data[1].response, data[2].response, data[0].response)
                     setAllResponded(true);
                 }
             }
