@@ -91,8 +91,6 @@ export default function Host() {
       await update(targetPlayerRef, {
         points: newPoints,
       });
-  
-      router.push(`/waiting-room/${gameId}`);
     }, {
       onlyOnce: true  
     });
