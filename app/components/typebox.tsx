@@ -65,7 +65,7 @@ export default function Typebox( { textToBeTyped, playerPrompt, pushToNextPage }
 
     return(
         <div>
-            <h1>The player's prompt: {playerPrompt}</h1>
+            <h1 className='text-2xl font-bold text-center mb-5 text-amber-400'>The player's prompt: {playerPrompt}</h1>
             <h1>{textToBeTyped}</h1>
             <form>
                 <textarea onChange={(e) => displayChar(e.target.value)}
@@ -74,7 +74,6 @@ export default function Typebox( { textToBeTyped, playerPrompt, pushToNextPage }
                           rows={5}
                           placeholder="Type your response here..."/>
             </form>
-            <h1>{timer}</h1>
         </div>
     );
 }
