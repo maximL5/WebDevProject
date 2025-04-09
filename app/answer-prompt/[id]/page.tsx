@@ -44,6 +44,7 @@ export default function Host() {
       await update(targetPlayerRef, {
         promptReceived: myPrompt,
         response: answer,
+        points: answer.length,
       });
   
       router.push(`/waiting-room/${gameId}`);
