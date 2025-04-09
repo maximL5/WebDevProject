@@ -13,7 +13,6 @@ type Player = {
 export default function Lobby() {
   const params = useParams<{ id: string }>();
   const searchParams = useSearchParams();
-1
   const [players, setPlayers] = useState<Player[]>([]);
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null);
   const isHost = searchParams.get("host") === "true";
@@ -85,7 +84,7 @@ export default function Lobby() {
       if (!data) return;
       // redirect players to answer-prompt page
       if (data.status === "waiting_for_prompt") {
-        router.push(`/answer-prompt?id=${gameId}`);
+        router.push(`/answer-prompt/${gameId}`);
       }
     });
 
@@ -111,7 +110,8 @@ export default function Lobby() {
           points: 0,
         })),
        }); // <-- merge instead of overwrite
-      router.push(`/answer-prompt?id=${gameId}`);
+
+      router.push(`/answer-prompt/${gameId}`);
     } catch (error) {
       console.error("Error starting game:", error);
     }

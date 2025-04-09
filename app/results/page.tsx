@@ -14,7 +14,7 @@ export default function Results() {
   const [players, setPlayers] = useState<Player[]>([]);
 
   const searchParams = useSearchParams();
-  const time = searchParams.get("id");
+  const time = searchParams.get("time");
 
   useEffect(() => {
     const gameId = "2DCCE708"; 

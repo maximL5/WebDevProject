@@ -6,7 +6,7 @@ import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { ref, set, onValue, update, get } from "firebase/database";
 import { realtimeDb } from "@/app/lib/firebase";
 
-import Typebox  from "../components/typebox";
+import Typebox  from "../../components/typebox";
 
 interface Player {
   id: string;
@@ -18,7 +18,7 @@ export default function Host() {
   const router = useRouter();
 
   const moveToResults = (time: number) => {
-    router.push(`/results?id=${time}`)
+    router.push(`/results?time=${time}`)
   }
 
   // const playerId = typeof window !== 'undefined' ? localStorage.getItem("me") : null;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import promptList from '../prompts.json';
+import promptList from '../../prompts.json';
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { ref, set, onValue, update } from "firebase/database";
 import { realtimeDb } from "@/app/lib/firebase";
@@ -12,21 +12,14 @@ function getRandomItem(arr:string[]) {
 } 
 
 export default function Host() {
-
   const [answer, setAnswer] = useState('');
-
   const [myPrompt] = useState(getRandomItem(promptList));
-
   const searchParams = useSearchParams();
   const gameId = searchParams.get("id");
-
   const router = useRouter();
-
   const playerId = typeof window !== 'undefined' ? localStorage.getItem("me") : null;
 
-
   const SubmitAnswer = async () => {
-    console.log(playerId)
     if (!answer || !gameId || !playerId) return;
   
     const playerListRef = ref(realtimeDb, `games/${gameId}/playerList`);
@@ -53,8 +46,7 @@ export default function Host() {
         response: answer,
       });
   
-      console.log('Answer submitted');
-      router.push(`/race?id=${gameId}`);
+      router.push(`/waiting-room/${gameId}`);
     }, {
       onlyOnce: true  
     });
