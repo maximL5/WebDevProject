@@ -14,9 +14,10 @@ function getRandomItem(arr:string[]) {
 export default function Host() {
   const [answer, setAnswer] = useState('');
   const [myPrompt] = useState(getRandomItem(promptList));
-  const searchParams = useSearchParams();
-  const gameId = searchParams.get("id");
   const router = useRouter();
+  const params = useParams();
+  const gameId = params.id as string;
+
   const playerId = typeof window !== 'undefined' ? localStorage.getItem("me") : null;
 
   const SubmitAnswer = async () => {
