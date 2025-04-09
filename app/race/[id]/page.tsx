@@ -65,7 +65,6 @@ export default function Host() {
 
   const moveToResults = (score: number) => {
     if (!gameId || !playerId) return;
-    console.log("Points should be being pushed to the DB!")
     const playerListRef = ref(realtimeDb, `games/${gameId}/playerList`);
   
     onValue(playerListRef, async (snapshot) => {
