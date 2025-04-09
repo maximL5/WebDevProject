@@ -17,7 +17,6 @@ export async function POST(request: Request) {
     }
 
     const roomId = uuidv4().split('-')[0].toUpperCase(); // Simple 8-char room code
-    console.log(`Generated new room ID: ${roomId} for ${nickname}`);
     
     // In a real app, you would store this in a database
     return NextResponse.json({ roomId });

@@ -93,7 +93,6 @@ export default function Lobby() {
 
   const startGame = async (): Promise<void> => {
     if (!isHost || !currentPlayer) {
-      console.log("Only host can start the game");
       return;
     }
   
