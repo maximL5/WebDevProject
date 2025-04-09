@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ref, onValue } from "firebase/database";
-import { realtimeDb } from "@/app/lib/firebase";
+import { realtimeDb } from "../../lib/firebase";
 import { useParams } from "next/navigation";
 
 type Player = {
@@ -44,11 +44,11 @@ export default function Results() {
           {players.map((player, index) => (
             <div
               key={player.id}
-              className="flex justify-between items-center bg-gray-700 px-4 py-2 rounded-md border border-gray-600 text-gray-200"
+              className="flex gap-10 justify-between items-center bg-gray-700 px-4 py-2 rounded-md border border-gray-600 text-gray-200"
             >
               <span>#{index + 1}</span>
-              <span>{player.nickname}</span>
-              <span>{player.points} pts</span>
+              <span className="mr-auto">{player.nickname}</span>
+              <span>{player.points.toFixed(1)} pts</span>
             </div>
           ))}
         </div>
