@@ -18,7 +18,40 @@ export default function Host() {
   const router = useRouter();
 
   const moveToResults = (score: number) => {
-    router.push(`/results?score=${score}`)
+    if (!gameId || !playerId) return;
+    console.log("Points should be being pushed to the DB!")
+    const playerListRef = ref(realtimeDb, `games/${gameId}/playerList`);
+  
+    onValue(playerListRef, async (snapshot) => {
+      const data = snapshot.val();
+  
+      if (!data || !Array.isArray(data)) {
+        console.error("Player list not found or invalid");
+        return;
+      }
+  
+      const index = data.findIndex((player: any) => player.id === playerId);
+  
+      if (index === -1) {
+        console.error("Player ID not found in player list");
+        return;
+      }
+
+      const currentPoints = data[index].points || 0;
+      const newPoints = currentPoints + score;
+  
+      const targetPlayerRef = ref(realtimeDb, `games/${gameId}/playerList/${index}`);
+  
+      await update(targetPlayerRef, {
+        points: newPoints,
+      });
+  
+      router.push(`/waiting-room/${gameId}`);
+    }, {
+      onlyOnce: true  
+    });
+
+    router.push(`/results/${gameId}`)
   }
 
   const playerId = typeof window !== 'undefined' ? localStorage.getItem("me") : null;
